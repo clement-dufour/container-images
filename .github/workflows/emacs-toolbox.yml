@@ -4,13 +4,13 @@ on:
     branches:
       - main
     paths:
-      - 'emacs-toolbox/*'
+      - 'emacs-toolbox/**'
       - '.github/workflows/emacs-toolbox.yml'
   push:
     branches:
       - main
     paths:
-      - 'emacs-toolbox/*'
+      - 'emacs-toolbox/**'
       - '.github/workflows/emacs-toolbox.yml'
   workflow_dispatch:
   schedule:
