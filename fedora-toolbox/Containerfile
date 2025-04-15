@@ -1,4 +1,4 @@
-FROM registry.fedoraproject.org/fedora-toolbox:41
+FROM registry.fedoraproject.org/fedora-toolbox:42
 
 RUN /usr/bin/sed -i "s/enabled=1/enabled=0/" /etc/yum.repos.d/fedora-cisco-openh264.repo \
     && /usr/bin/dnf5 --assumeyes install \
