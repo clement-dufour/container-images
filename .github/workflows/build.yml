@@ -19,7 +19,7 @@ on:
   workflow_dispatch:
   schedule:
     # Every sunday at 6:00 a.m.
-    - cron: "0 6 * * 0"
+    - cron: "0 6 * * SUN"
 
 env:
     IMAGE_TAGS: latest
