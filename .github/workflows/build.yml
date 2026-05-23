@@ -17,9 +17,6 @@ on:
       - '!.github/**'
       - '.github/workflows/build.yml'
   workflow_dispatch:
-  schedule:
-    # Every sunday at 6:00 a.m.
-    - cron: "0 6 * * SUN"
 
 env:
     IMAGE_TAGS: latest ${{ github.sha }}

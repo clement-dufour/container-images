@@ -5,11 +5,13 @@
   ],
   "packageRules": [
     {
-      "matchFileNames": [
-        "emacs-toolbox/Containerfile",
-        "fedora-toolbox/Containerfile"
+      "matchPackageNames": [
+        "registry.fedoraproject.org/*"
       ],
-      "pinDigests": false
+      "matchUpdateTypes": [
+        "digest"
+      ],
+      "automerge": true
     }
   ]
 }
