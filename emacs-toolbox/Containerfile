@@ -1,4 +1,4 @@
-FROM registry.fedoraproject.org/fedora-toolbox:44@sha256:c9d125970ad29cc76de3cedb442e9ee8df1516145443a3b45ebc41fc760d5c22
+FROM registry.fedoraproject.org/fedora-toolbox:45@sha256:13db75c4d507b2593a49629e68f8568c14756bcd7f474183df43cf79183f879e
 
 RUN \
     dnf config-manager disable \
