@@ -6,7 +6,7 @@ RUN \
     sed -i "/enabled=/s/1/0/" \
         /etc/yum.repos.d/fedora-cisco-openh264.repo \
     && \
-    dnf --assumeyes install \
+    dnf --assumeyes --setopt=install_weak_deps=False install \
         buildah \
         nodejs24 \
     && \
