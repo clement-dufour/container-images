@@ -3,6 +3,9 @@ FROM quay.io/podman/stable:v5.8.2
 RUN \
     --mount=type=tmpfs,target=/var \
     \
+    sed -i "/enabled=/s/1/0/" \
+        /etc/yum.repos.d/fedora-cisco-openh264.repo \
+    && \
     dnf --assumeyes install \
         buildah \
         nodejs24 \
