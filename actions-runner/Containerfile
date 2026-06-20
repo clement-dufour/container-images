@@ -8,6 +8,9 @@ RUN \
     && \
     dnf --assumeyes --setopt=install_weak_deps=False install \
         buildah \
+        skopeo \
+    && \
+    dnf --assumeyes --setopt=install_weak_deps=False install \
         nodejs24 \
     && \
     dnf clean all
