@@ -38,6 +38,7 @@ jobs:
         container:
           - emacs-toolbox
           - fedora-toolbox
+          - actions-runner
 
     permissions:
       contents: read

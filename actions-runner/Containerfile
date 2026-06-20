@@ -1,0 +1,10 @@
+FROM quay.io/podman/stable:v5.8.2
+
+RUN \
+    --mount=type=tmpfs,target=/var \
+    \
+    dnf --assumeyes install \
+        buildah \
+        nodejs24 \
+    && \
+    dnf clean all
