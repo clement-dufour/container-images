@@ -64,34 +64,6 @@ jobs:
             use-sigstore-attachments: true
           EOF
 
-          cat << EOF > "${HOME}/.config/containers/policy.json"
-          {
-            "default": [
-              {
-                "type": "reject"
-              }
-            ],
-            "transports": {
-              "docker": {
-                "quay.io/toolbx-images": [
-                  {
-                    "type": "sigstoreSigned",
-                    "keyData": "$(base64 -w 0 "${FORGEJO_WORKSPACE}/quay.io-toolbx-images.pub")",
-                    "signedIdentity": {
-                        "type": "matchRepository"
-                    }
-                  }
-                ],
-                "quay.io/podman/stable": [
-                  {
-                    "type": "insecureAcceptAnything"
-                  }
-                ]
-              }
-            }
-          }
-          EOF
-
       - name: build
         id: build
         env:
