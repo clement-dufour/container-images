@@ -1,16 +1,21 @@
 FROM quay.io/podman/stable:v5.8.2
 
-RUN \
-    --mount=type=tmpfs,target=/var \
-    \
-    sed -i "/enabled=/s/1/0/" \
-        /etc/yum.repos.d/fedora-cisco-openh264.repo \
-    && \
-    dnf --assumeyes --setopt=install_weak_deps=False install \
-        buildah \
-        skopeo \
-    && \
-    dnf --assumeyes --setopt=install_weak_deps=False install \
-        nodejs24 \
-    && \
-    dnf clean all
+RUN --mount=type=tmpfs,target=/var << 'EOF'
+set -e -o nounset -o pipefail
+set -x
+
+sed -i "/enabled=/s/1/0/" \
+    /etc/yum.repos.d/fedora-cisco-openh264.repo \
+
+
+dnf --assumeyes --setopt=install_weak_deps=False install \
+    nodejs24 \
+
+
+dnf --assumeyes --setopt=install_weak_deps=False install \
+    buildah \
+    skopeo \
+
+
+dnf clean all
+EOF

@@ -1,17 +1,31 @@
 FROM registry.fedoraproject.org/fedora-toolbox:44@sha256:eaa9a2978db255ccd7f1553ee8b24676ff5c5e90d1f16e19dbe61a0e77df57e7
 
-RUN \
-    dnf config-manager disable \
-        fedora-cisco-openh264 \
-    && \
-    dnf --assumeyes install \
-        adw-gtk3-theme \
-        flatpak-xdg-utils \
-    && \
-    dnf --assumeyes install \
-        fzf \
-        mpv \
-        stow \
-    && \
-    dnf clean all && \
-    ln -sf /usr/bin/flatpak-xdg-open /usr/bin/xdg-open
+RUN --mount=type=tmpfs,target=/var << 'EOF'
+set -e -o nounset -o pipefail
+set -x
+
+dnf config-manager disable \
+    fedora-cisco-openh264 \
+
+
+dnf --assumeyes install \
+    adw-gtk3-theme \
+    flatpak-xdg-utils \
+
+
+dnf --assumeyes install \
+    emacs-pgtk \
+    ripgrep \
+    fd-find \
+
+
+dnf --assumeyes install \
+    fzf \
+    mpv \
+    stow \
+
+
+dnf clean all
+
+ln -sf /usr/bin/flatpak-xdg-open /usr/bin/xdg-open
+EOF
