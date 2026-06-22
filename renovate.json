@@ -7,12 +7,21 @@
   "packageRules": [
     {
       "matchPackageNames": [
-        "registry.fedoraproject.org/*"
+        "registry.fedoraproject.org/fedora-toolbox"
       ],
       "matchUpdateTypes": [
         "digest"
       ],
       "automerge": true
+    },
+    {
+      "matchPackageNames": [
+        "registry.fedoraproject.org/fedora-toolbox"
+      ],
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "dependencyDashboardApproval": true
     }
   ]
 }
