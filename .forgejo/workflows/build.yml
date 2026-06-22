@@ -26,7 +26,7 @@ env:
   REGISTRY: forgejo.clmnt.xyz
   OWNER: ${{ forgejo.actor }}
   REPOSITORY: ${{ forgejo.repository }}
-  IMAGE_TAGS: ${{ forgejo.sha }} latest
+  IMAGE_TAGS: latest
 
   LOGLEVEL: warn # warn is the default value
 
