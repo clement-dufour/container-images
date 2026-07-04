@@ -81,12 +81,14 @@ jobs:
             printf 'image-with-tag=%s\n' "${image_with_tag}"
           } >> "${FORGEJO_OUTPUT}"
 
-      - name: perform static analysis checks
-        env:
-          IMAGE_WITH_TAG: ${{ steps.build.outputs.image-with-tag }}
+      - name: perform static analysis checks (bootc images)
         shell: bash --noprofile --norc -e -o nounset -o pipefail {0}
         run: |
-          podman --log-level "${LOGLEVEL}" run --rm "${IMAGE_WITH_TAG}" bootc container lint --fatal-warnings
+          for tag in ${TAGS}; do
+            if podman image inspect "${REGISTRY}/${REPOSITORY}:${tag}" | jq -e '.[].Config.Labels["containers.bootc"] == "1"'; then
+              podman --log-level "${LOGLEVEL}" run --rm "${REGISTRY}/${REPOSITORY}:${tag}" bootc container lint --fatal-warnings
+            fi
+          done
 
       - name: login to container registry
         id: login
