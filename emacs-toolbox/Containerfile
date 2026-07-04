@@ -1,4 +1,4 @@
-FROM registry.fedoraproject.org/fedora-toolbox:44@sha256:f94669859d5b9ff10f354bfe034cc3db3ee0d841a7b3ae7688da907c3c012d32
+FROM registry.fedoraproject.org/fedora-toolbox:44@sha256:ac02b961570dbe8db548a63feda343813cd2f0136bcc2c9a3f14be7ba783915f
 
 RUN --mount=type=tmpfs,target=/var << 'EOF'
 set -e -o nounset -o pipefail
