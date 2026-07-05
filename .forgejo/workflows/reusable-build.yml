@@ -85,7 +85,7 @@ jobs:
         shell: bash --noprofile --norc -e -o nounset -o pipefail {0}
         run: |
           for tag in ${TAGS}; do
-            if podman image inspect "${REGISTRY}/${REPOSITORY}:${tag}" | jq -e '.[].Config.Labels["containers.bootc"] == "1"'; then
+            if podman image inspect "${REGISTRY}/${REPOSITORY}:${tag}" | jq -e '.[].Config.Labels["containers.bootc"] == "1"' >/dev/null; then
               podman --log-level "${LOGLEVEL}" run --rm "${REGISTRY}/${REPOSITORY}:${tag}" bootc container lint --fatal-warnings
             fi
           done
