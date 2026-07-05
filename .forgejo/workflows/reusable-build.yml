@@ -22,6 +22,10 @@ on:
       containers-policy:
         type: string
         required: false
+      podman-log-level:
+        default: 'warn' # debug, info, warn, error, fatal or panic (default: warn)
+        type: string
+        required: false
 
 env:
   SOURCE: ${{ forgejo.event.repository.html_url }}
@@ -31,8 +35,7 @@ env:
   CONTAINERFILE: ${{ inputs.containerfile }}
   CONTEXT: ${{ inputs.context }}
   CONTAINERS_POLICY: ${{ inputs.containers-policy }}
-
-  LOGLEVEL: 'warn'  # debug, info, warn, error, fatal or panic (default: warn)
+  LOG_LEVEL: ${{ inputs.podman-log-level }}
 
 jobs:
   reusable-build:
@@ -75,7 +78,7 @@ jobs:
             fi
           done
 
-          buildah --log-level "${LOGLEVEL}" bud --format oci --file "${CONTAINERFILE}" "${labels[@]}" "${tags[@]}" "${CONTEXT}"
+          buildah --log-level "${LOG_LEVEL}" bud --format oci --file "${CONTAINERFILE}" "${labels[@]}" "${tags[@]}" "${CONTEXT}"
 
           {
             printf 'image-with-tag=%s\n' "${image_with_tag}"
@@ -86,7 +89,7 @@ jobs:
         run: |
           for tag in ${TAGS}; do
             if podman image inspect "${REGISTRY}/${REPOSITORY}:${tag}" | jq -e '.[].Config.Labels["containers.bootc"] == "1"' >/dev/null; then
-              podman --log-level "${LOGLEVEL}" run --rm "${REGISTRY}/${REPOSITORY}:${tag}" bootc container lint --fatal-warnings
+              podman --log-level "${LOG_LEVEL}" run --rm "${REGISTRY}/${REPOSITORY}:${tag}" bootc container lint --fatal-warnings
             fi
           done
 
@@ -98,7 +101,7 @@ jobs:
           REGISTRY_PASSWORD: ${{ secrets.registry-password }}
         shell: bash --noprofile --norc -e -o nounset -o pipefail {0}
         run: |
-          podman --log-level "${LOGLEVEL}" login --username "${REGISTRY_USER}" --password "${REGISTRY_PASSWORD}" "${REGISTRY}"
+          podman --log-level "${LOG_LEVEL}" login --username "${REGISTRY_USER}" --password "${REGISTRY_PASSWORD}" "${REGISTRY}"
 
       - name: push to registry
         id: push
@@ -108,11 +111,11 @@ jobs:
         shell: bash --noprofile --norc -e -o nounset -o pipefail {0}
         run: |
           for tag in ${TAGS}; do
-            podman --log-level "${LOGLEVEL}" push --sign-by-sigstore-private-key <(printf '%s\n' "${SIGSTORE_PRIVATE_KEY}") "${REGISTRY}/${REPOSITORY}:${tag}"
+            podman --log-level "${LOG_LEVEL}" push --sign-by-sigstore-private-key <(printf '%s\n' "${SIGSTORE_PRIVATE_KEY}") "${REGISTRY}/${REPOSITORY}:${tag}"
           done
 
       - name: logout from container registry
         if: ${{ always() && (steps.login.outcome == 'success' || steps.login.outcome == 'failure' ) }}
         shell: bash --noprofile --norc -e -o nounset -o pipefail {0}
         run: |
-          podman --log-level "${LOGLEVEL}" logout "${REGISTRY}"
+          podman --log-level "${LOG_LEVEL}" logout "${REGISTRY}"
