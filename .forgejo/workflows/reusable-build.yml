@@ -79,15 +79,22 @@ jobs:
             args+=( '--label' "${label}" )
           done
 
-          buildah --log-level "${LOG_LEVEL}" build --format oci "${args[@]}" "${CONTEXT}"
+          buildah --log-level "${LOG_LEVEL}" build \
+            --format oci \
+            "${args[@]}" \
+            "${CONTEXT}"
 
       - name: perform static analysis checks (bootc images)
         shell: bash --noprofile --norc -e -o nounset -o pipefail {0}
         run: |
           for image_name in ${IMAGE_NAMES}; do
-            if podman image inspect "${image_name}" | jq -e '.[].Config.Labels["containers.bootc"] == "1"' >/dev/null; then
-              podman --log-level "${LOG_LEVEL}" run --rm "${image_name}" bootc container lint --fatal-warnings
-            fi
+            if podman image inspect "${image_name}" |
+                jq -e '.[].Config.Labels["containers.bootc"] == "1"' >/dev/null; then
+              podman --log-level "${LOG_LEVEL}" run \
+                --rm \
+                "${image_name}" \
+                bootc container lint --fatal-warnings
+              fi
           done
 
       - name: push
@@ -126,4 +133,5 @@ jobs:
         if: ${{ always() }}
         shell: bash --noprofile --norc -e -o nounset -o pipefail {0}
         run: |
-          podman --log-level "${LOG_LEVEL}" logout --all
+          podman --log-level "${LOG_LEVEL}" logout \
+            --all
