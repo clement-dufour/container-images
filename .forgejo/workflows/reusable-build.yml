@@ -67,22 +67,14 @@ jobs:
         run: |
           labels=()
           tags=()
-          image_with_tag=''
 
           labels+=( '--label' "org.opencontainers.image.source=${SOURCE}" )
 
           for tag in ${TAGS}; do
             tags+=( '--tag' "${REGISTRY}/${REPOSITORY}:${tag}" )
-            if [ -z "${image_with_tag}" ]; then
-              image_with_tag="${REGISTRY}/${REPOSITORY}:${tag}"
-            fi
           done
 
           buildah --log-level "${LOG_LEVEL}" bud --format oci --file "${CONTAINERFILE}" "${labels[@]}" "${tags[@]}" "${CONTEXT}"
-
-          {
-            printf 'image-with-tag=%s\n' "${image_with_tag}"
-          } >> "${FORGEJO_OUTPUT}"
 
       - name: perform static analysis checks (bootc images)
         shell: bash --noprofile --norc -e -o nounset -o pipefail {0}
