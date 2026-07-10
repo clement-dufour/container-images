@@ -2,18 +2,15 @@ name: reusable-build
 on:
   workflow_call:
     inputs:
+      image-names:
+        type: string
+        required: true
       containerfiles:
         type: string
         required: false
       registry:
         type: string
-        required: true
-      repository:
-        type: string
-        required: true
-      tags:
-        type: string
-        required: true
+        required: false
       context:
         type: string
         required: false
@@ -26,10 +23,9 @@ on:
         required: false
 
 env:
+  IMAGE_NAMES: ${{ inputs.image-names }}
   CONTAINERFILES: ${{ inputs.containerfiles }}
   REGISTRY: ${{ inputs.registry }}
-  REPOSITORY: ${{ inputs.repository }}
-  TAGS: ${{ inputs.tags }}
   CONTEXT: ${{ inputs.context }}
   CONTAINERS_POLICY: ${{ inputs.containers-policy }}
   LOG_LEVEL: ${{ inputs.podman-log-level }}
@@ -74,8 +70,8 @@ jobs:
 
           labels+=( '--label' "org.opencontainers.image.source=${SOURCE}" )
 
-          for tag in ${TAGS}; do
-            tags+=( '--tag' "${REGISTRY}/${REPOSITORY}:${tag}" )
+          for image_name in ${IMAGE_NAMES}; do
+            tags+=( '--tag' "${image_name}" )
           done
 
           buildah --log-level "${LOG_LEVEL}" build --format oci "${containerfiles[@]}" "${labels[@]}" "${tags[@]}" "${CONTEXT}"
@@ -83,9 +79,9 @@ jobs:
       - name: perform static analysis checks (bootc images)
         shell: bash --noprofile --norc -e -o nounset -o pipefail {0}
         run: |
-          for tag in ${TAGS}; do
-            if podman image inspect "${REGISTRY}/${REPOSITORY}:${tag}" | jq -e '.[].Config.Labels["containers.bootc"] == "1"' >/dev/null; then
-              podman --log-level "${LOG_LEVEL}" run --rm "${REGISTRY}/${REPOSITORY}:${tag}" bootc container lint --fatal-warnings
+          for image_name in ${IMAGE_NAMES}; do
+            if podman image inspect "${image_name}" | jq -e '.[].Config.Labels["containers.bootc"] == "1"' >/dev/null; then
+              podman --log-level "${LOG_LEVEL}" run --rm "${image_name}" bootc container lint --fatal-warnings
             fi
           done
 
@@ -106,8 +102,8 @@ jobs:
           SIGSTORE_PRIVATE_KEY: ${{ secrets.sigstore-private-key }}
         shell: bash --noprofile --norc -e -o nounset -o pipefail {0}
         run: |
-          for tag in ${TAGS}; do
-            podman --log-level "${LOG_LEVEL}" push --sign-by-sigstore-private-key <(printf '%s\n' "${SIGSTORE_PRIVATE_KEY}") "${REGISTRY}/${REPOSITORY}:${tag}"
+          for image_name in ${IMAGE_NAMES}; do
+            podman --log-level "${LOG_LEVEL}" push --sign-by-sigstore-private-key <(printf '%s\n' "${SIGSTORE_PRIVATE_KEY}") "${image_name}"
           done
 
       - name: logout from container registry
