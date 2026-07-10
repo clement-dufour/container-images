@@ -8,9 +8,6 @@ on:
       containerfiles:
         type: string
         required: false
-      registry:
-        type: string
-        required: false
       context:
         type: string
         required: false
@@ -29,7 +26,6 @@ on:
 env:
   IMAGE_NAMES: ${{ inputs.image-names }}
   CONTAINERFILES: ${{ inputs.containerfiles }}
-  REGISTRY: ${{ inputs.registry }}
   CONTEXT: ${{ inputs.context }}
   SOURCE: ${{ inputs.source }}
   CONTAINERS_POLICY: ${{ inputs.containers-policy }}
@@ -88,26 +84,37 @@ jobs:
             fi
           done
 
-      - name: login to container registry
-        id: login
+      - name: push
+        id: push
         if: ${{ forgejo.event_name != 'pull_request' && forgejo.ref == 'refs/heads/main' }}
         env:
           REGISTRY_USER: ${{ secrets.registry-user }}
           REGISTRY_PASSWORD: ${{ secrets.registry-password }}
-        shell: bash --noprofile --norc -e -o nounset -o pipefail {0}
-        run: |
-          podman --log-level "${LOG_LEVEL}" login --username "${REGISTRY_USER}" --password "${REGISTRY_PASSWORD}" "${REGISTRY}"
-
-      - name: push to registry
-        id: push
-        if: ${{ forgejo.event_name != 'pull_request' && forgejo.ref == 'refs/heads/main' }}
-        env:
           SIGSTORE_PRIVATE_KEY: ${{ secrets.sigstore-private-key }}
+          SIGSTORE_PASSPHRASE: ${{ secrets.sigstore-passphrase }}
         shell: bash --noprofile --norc -e -o nounset -o pipefail {0}
         run: |
-          for image_name in ${IMAGE_NAMES}; do
-            podman --log-level "${LOG_LEVEL}" push --sign-by-sigstore-private-key <(printf '%s\n' "${SIGSTORE_PRIVATE_KEY}") "${image_name}"
-          done
+          creds=()
+
+          if [ -n "${REGISTRY_USER}" ] && [ -n "${REGISTRY_PASSWORD}" ]; then
+            creds+=( '--creds' "${REGISTRY_USER}:${REGISTRY_PASSWORD}" )
+          fi
+
+          if [ -n "${SIGSTORE_PRIVATE_KEY}" ]; then
+            for image_name in ${IMAGE_NAMES}; do
+              podman --log-level "${LOG_LEVEL}" push \
+                "${creds[@]}" \
+                --sign-by-sigstore-private-key <(printf '%s\n' "${SIGSTORE_PRIVATE_KEY}") \
+                --sign-passphrase-file <(printf '%s\n' "${SIGSTORE_PASSPHRASE}") \
+                "${image_name}"
+            done
+          else
+            for image_name in ${IMAGE_NAMES}; do
+              podman --log-level "${LOG_LEVEL}" push \
+                "${args[@]}" \
+                "${image_name}"
+            done
+          fi
 
       - name: logout from container registry
         if: ${{ always() }}
