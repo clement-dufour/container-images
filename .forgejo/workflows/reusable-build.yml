@@ -14,6 +14,10 @@ on:
       context:
         type: string
         required: false
+      source:
+        default: ${{ forgejo.event.repository.html_url }}
+        type: string
+        required: false
       containers-policy:
         type: string
         required: false
@@ -27,10 +31,9 @@ env:
   CONTAINERFILES: ${{ inputs.containerfiles }}
   REGISTRY: ${{ inputs.registry }}
   CONTEXT: ${{ inputs.context }}
+  SOURCE: ${{ inputs.source }}
   CONTAINERS_POLICY: ${{ inputs.containers-policy }}
   LOG_LEVEL: ${{ inputs.podman-log-level }}
-
-  SOURCE: ${{ forgejo.event.repository.html_url }}
 
 jobs:
   reusable-build:
