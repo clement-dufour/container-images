@@ -17,6 +17,7 @@ dnf --assumeyes install \
     emacs-pgtk \
     ripgrep \
     fd-find \
+    gdouros-symbola-fonts \
 
 
 dnf --assumeyes install \
