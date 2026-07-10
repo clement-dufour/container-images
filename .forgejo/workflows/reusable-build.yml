@@ -74,7 +74,7 @@ jobs:
             tags+=( '--tag' "${REGISTRY}/${REPOSITORY}:${tag}" )
           done
 
-          buildah --log-level "${LOG_LEVEL}" bud --format oci --file "${CONTAINERFILE}" "${labels[@]}" "${tags[@]}" "${CONTEXT}"
+          buildah --log-level "${LOG_LEVEL}" build --format oci --file "${CONTAINERFILE}" "${labels[@]}" "${tags[@]}" "${CONTEXT}"
 
       - name: perform static analysis checks (bootc images)
         shell: bash --noprofile --norc -e -o nounset -o pipefail {0}
