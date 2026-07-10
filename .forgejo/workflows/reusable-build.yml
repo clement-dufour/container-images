@@ -59,21 +59,19 @@ jobs:
         id: build
         shell: bash --noprofile --norc -e -o nounset -o pipefail {0}
         run: |
-          containerfiles=()
-          labels=()
-          tags=()
+          args=()
 
           for containerfile in ${CONTAINERFILES}; do
-            containerfiles+=( '--file' "${containerfile}" )
+            args+=( '--file' "${containerfile}" )
           done
 
-          labels+=( '--label' "org.opencontainers.image.source=${SOURCE}" )
+          args+=( '--label' "org.opencontainers.image.source=${SOURCE}" )
 
           for image_name in ${IMAGE_NAMES}; do
-            tags+=( '--tag' "${image_name}" )
+            args+=( '--tag' "${image_name}" )
           done
 
-          buildah --log-level "${LOG_LEVEL}" build --format oci "${containerfiles[@]}" "${labels[@]}" "${tags[@]}" "${CONTEXT}"
+          buildah --log-level "${LOG_LEVEL}" build --format oci "${args[@]}" "${CONTEXT}"
 
       - name: perform static analysis checks (bootc images)
         shell: bash --noprofile --norc -e -o nounset -o pipefail {0}
@@ -94,16 +92,16 @@ jobs:
           SIGSTORE_PASSPHRASE: ${{ secrets.sigstore-passphrase }}
         shell: bash --noprofile --norc -e -o nounset -o pipefail {0}
         run: |
-          creds=()
+          args=()
 
           if [ -n "${REGISTRY_USER}" ] && [ -n "${REGISTRY_PASSWORD}" ]; then
-            creds+=( '--creds' "${REGISTRY_USER}:${REGISTRY_PASSWORD}" )
+            args+=( '--creds' "${REGISTRY_USER}:${REGISTRY_PASSWORD}" )
           fi
 
           if [ -n "${SIGSTORE_PRIVATE_KEY}" ]; then
             for image_name in ${IMAGE_NAMES}; do
               podman --log-level "${LOG_LEVEL}" push \
-                "${creds[@]}" \
+                "${args[@]}" \
                 --sign-by-sigstore-private-key <(printf '%s\n' "${SIGSTORE_PRIVATE_KEY}") \
                 --sign-passphrase-file <(printf '%s\n' "${SIGSTORE_PASSPHRASE}") \
                 "${image_name}"
