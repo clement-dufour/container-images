@@ -8,6 +8,9 @@ on:
       containerfiles:
         type: string
         required: false
+      labels:
+        type: string
+        required: false
       context:
         type: string
         required: false
@@ -26,6 +29,7 @@ on:
 env:
   IMAGE_NAMES: ${{ inputs.image-names }}
   CONTAINERFILES: ${{ inputs.containerfiles }}
+  LABELS: ${{ inputs.labels }}
   CONTEXT: ${{ inputs.context }}
   SOURCE: ${{ inputs.source }}
   CONTAINERS_POLICY: ${{ inputs.containers-policy }}
@@ -61,14 +65,18 @@ jobs:
         run: |
           args=()
 
+          for image_name in ${IMAGE_NAMES}; do
+            args+=( '--tag' "${image_name}" )
+          done
+
           for containerfile in ${CONTAINERFILES}; do
             args+=( '--file' "${containerfile}" )
           done
 
           args+=( '--label' "org.opencontainers.image.source=${SOURCE}" )
 
-          for image_name in ${IMAGE_NAMES}; do
-            args+=( '--tag' "${image_name}" )
+          for label in ${LABELS}; do
+            args+=( '--label' "${label}" )
           done
 
           buildah --log-level "${LOG_LEVEL}" build --format oci "${args[@]}" "${CONTEXT}"
