@@ -12,11 +12,9 @@ on:
         type: string
         required: true
       containerfile:
-        default: ${{ forgejo.workspace }}/Containerfile
         type: string
         required: false
       context:
-        default: ${{ forgejo.workspace }}
         type: string
         required: false
       containers-policy:
