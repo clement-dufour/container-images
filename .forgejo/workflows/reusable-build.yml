@@ -2,6 +2,9 @@ name: reusable-build
 on:
   workflow_call:
     inputs:
+      containerfiles:
+        type: string
+        required: false
       registry:
         type: string
         required: true
@@ -11,9 +14,6 @@ on:
       tags:
         type: string
         required: true
-      containerfile:
-        type: string
-        required: false
       context:
         type: string
         required: false
@@ -26,14 +26,15 @@ on:
         required: false
 
 env:
-  SOURCE: ${{ forgejo.event.repository.html_url }}
+  CONTAINERFILES: ${{ inputs.containerfiles }}
   REGISTRY: ${{ inputs.registry }}
   REPOSITORY: ${{ inputs.repository }}
   TAGS: ${{ inputs.tags }}
-  CONTAINERFILE: ${{ inputs.containerfile }}
   CONTEXT: ${{ inputs.context }}
   CONTAINERS_POLICY: ${{ inputs.containers-policy }}
   LOG_LEVEL: ${{ inputs.podman-log-level }}
+
+  SOURCE: ${{ forgejo.event.repository.html_url }}
 
 jobs:
   reusable-build:
@@ -63,8 +64,13 @@ jobs:
         id: build
         shell: bash --noprofile --norc -e -o nounset -o pipefail {0}
         run: |
+          containerfiles=()
           labels=()
           tags=()
+
+          for containerfile in ${CONTAINERFILES}; do
+            containerfiles+=( '--file' "${containerfile}" )
+          done
 
           labels+=( '--label' "org.opencontainers.image.source=${SOURCE}" )
 
@@ -72,7 +78,7 @@ jobs:
             tags+=( '--tag' "${REGISTRY}/${REPOSITORY}:${tag}" )
           done
 
-          buildah --log-level "${LOG_LEVEL}" build --format oci --file "${CONTAINERFILE}" "${labels[@]}" "${tags[@]}" "${CONTEXT}"
+          buildah --log-level "${LOG_LEVEL}" build --format oci "${containerfiles[@]}" "${labels[@]}" "${tags[@]}" "${CONTEXT}"
 
       - name: perform static analysis checks (bootc images)
         shell: bash --noprofile --norc -e -o nounset -o pipefail {0}
