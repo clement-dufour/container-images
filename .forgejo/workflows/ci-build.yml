@@ -39,10 +39,10 @@ jobs:
           - fedora-toolbox
 
     with:
-      registry: 'forgejo.clmnt.xyz'
-      repository: ${{ forgejo.actor }}/${{ matrix.image }}
-      tags: ${{ forgejo.sha }} latest
-      containerfile: ${{ matrix.image }}/Containerfile
+      image-names: |
+        forgejo.clmnt.xyz/${{ forgejo.actor }}/${{ matrix.image }}:${{ forgejo.sha }}
+        forgejo.clmnt.xyz/${{ forgejo.actor }}/${{ matrix.image }}:latest
+      containerfiles: ${{ matrix.image }}/Containerfile
       context: ${{ matrix.image }}
     secrets:
       registry-user: ${{ forgejo.actor }}
