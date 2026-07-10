@@ -110,7 +110,7 @@ jobs:
           done
 
       - name: logout from container registry
-        if: ${{ always() && (steps.login.outcome == 'success' || steps.login.outcome == 'failure' ) }}
+        if: ${{ always() }}
         shell: bash --noprofile --norc -e -o nounset -o pipefail {0}
         run: |
-          podman --log-level "${LOG_LEVEL}" logout "${REGISTRY}"
+          podman --log-level "${LOG_LEVEL}" logout --all
