@@ -19,7 +19,7 @@ on:
         type: string
         required: false
       push:
-        default: ${{ forgejo.event_name != 'pull_request' && forgejo.ref == 'refs/heads/main' }}
+        default: ${{ ((forgejo.event_name == 'workflow_dispatch' || forgejo.event_name == 'push') && forgejo.ref == 'refs/heads/main') || forgejo.event_name == 'schedule' }}
         type: boolean
         required: false
       containers-policy:
