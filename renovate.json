@@ -1,34 +1,9 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:best-practices"
+    "clmnt/renovate-config"
   ],
   "packageRules": [
-    {
-      "matchPackageNames": [
-        "/^clmnt\\//"
-      ],
-      "matchManagers": [
-        "github-actions"
-      ],
-      "matchDatasources": [
-        "github-tags"
-      ],
-      "overrideDatasource": "forgejo-tags",
-      "registryUrls": [
-          "https://forgejo.clmnt.xyz/"
-      ]
-    },
-    {
-      "matchPackageNames": [
-        "registry.fedoraproject.org/fedora-toolbox"
-      ],
-      "matchUpdateTypes": [
-        "digest"
-      ],
-      "automerge": true,
-      "automergeType": "branch"
-    },
     {
       "matchPackageNames": [
         "registry.fedoraproject.org/fedora-toolbox"
