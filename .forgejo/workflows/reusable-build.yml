@@ -18,6 +18,10 @@ on:
         default: ${{ forgejo.event.repository.html_url }}
         type: string
         required: false
+      push:
+        default: ${{ forgejo.event_name != 'pull_request' && forgejo.ref == 'refs/heads/main' }}
+        type: boolean
+        required: false
       containers-policy:
         type: string
         required: false
@@ -99,7 +103,7 @@ jobs:
 
       - name: push
         id: push
-        if: ${{ forgejo.event_name != 'pull_request' && forgejo.ref == 'refs/heads/main' }}
+        if: ${{ inputs.push }}
         env:
           REGISTRY_USER: ${{ secrets.registry-user }}
           REGISTRY_PASSWORD: ${{ secrets.registry-password }}
