@@ -2,24 +2,9 @@ name: build emacs-toolbox
 on:
   workflow_dispatch:
   push:
-    branches:
-      - 'main'
-      - 'renovate/**'
     paths:
       - 'emacs-toolbox/**'
-      - '!**/README.md'
-      - '!**/README.org'
-      - '!**/renovate.json'
-      - '!.forgejo/**'
-  pull_request:
-    branches:
-      - 'main'
-    paths:
-      - 'emacs-toolbox/**'
-      - '!**/README.md'
-      - '!**/README.org'
-      - '!**/renovate.json'
-      - '!.forgejo/**'
+      - '.forgejo/workflows/ci-build-emacs-toolbox.yml'
 
 concurrency:
   group: ${{ forgejo.workflow }}-${{ forgejo.ref || forgejo.run_id }}

@@ -2,24 +2,9 @@ name: build fedora-toolbox
 on:
   workflow_dispatch:
   push:
-    branches:
-      - 'main'
-      - 'renovate/**'
     paths:
       - 'fedora-toolbox/**'
-      - '!**/README.md'
-      - '!**/README.org'
-      - '!**/renovate.json'
-      - '!.forgejo/**'
-  pull_request:
-    branches:
-      - 'main'
-    paths:
-      - 'fedora-toolbox/**'
-      - '!**/README.md'
-      - '!**/README.org'
-      - '!**/renovate.json'
-      - '!.forgejo/**'
+      - '.forgejo/workflows/ci-build-fedora-toolbox.yml'
 
 concurrency:
   group: ${{ forgejo.workflow }}-${{ forgejo.ref || forgejo.run_id }}

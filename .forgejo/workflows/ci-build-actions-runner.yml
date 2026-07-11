@@ -2,24 +2,9 @@ name: build actions-runner
 on:
   workflow_dispatch:
   push:
-    branches:
-      - 'main'
-      - 'renovate/**'
     paths:
       - 'actions-runner/**'
-      - '!**/README.md'
-      - '!**/README.org'
-      - '!**/renovate.json'
-      - '!.forgejo/**'
-  pull_request:
-    branches:
-      - 'main'
-    paths:
-      - 'actions-runner/**'
-      - '!**/README.md'
-      - '!**/README.org'
-      - '!**/renovate.json'
-      - '!.forgejo/**'
+      - '.forgejo/workflows/ci-build-actions-runner.yml'
 
 concurrency:
   group: ${{ forgejo.workflow }}-${{ forgejo.ref || forgejo.run_id }}
