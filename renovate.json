@@ -6,6 +6,21 @@
   "packageRules": [
     {
       "matchPackageNames": [
+        "/^clmnt\\//"
+      ],
+      "matchManagers": [
+        "github-actions"
+      ],
+      "matchDatasources": [
+        "github-tags"
+      ],
+      "overrideDatasource": "forgejo-tags",
+      "registryUrls": [
+          "https://forgejo.clmnt.xyz/"
+      ]
+    },
+    {
+      "matchPackageNames": [
         "registry.fedoraproject.org/fedora-toolbox"
       ],
       "matchUpdateTypes": [
