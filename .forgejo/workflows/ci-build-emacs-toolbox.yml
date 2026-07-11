@@ -38,8 +38,8 @@ jobs:
 
     with:
       image-names: |
-        forgejo.clmnt.xyz/${{ forgejo.actor }}/${{ matrix.image }}:${{ forgejo.sha }}
-        forgejo.clmnt.xyz/${{ forgejo.actor }}/${{ matrix.image }}:latest
+        forgejo.clmnt.xyz/${{ forgejo.repository_owner }}/${{ matrix.image }}:${{ forgejo.sha }}
+        forgejo.clmnt.xyz/${{ forgejo.repository_owner }}/${{ matrix.image }}:latest
       containerfiles: ${{ matrix.image }}/Containerfile
       context: ${{ matrix.image }}
     secrets:
