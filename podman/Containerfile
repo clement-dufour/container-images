@@ -36,10 +36,10 @@ runtime="crun"
 EOF
 
 if [ -f /etc/containers/storage.conf ]; then
-    sed -i -e '/mountopt =/s/".*"/"nodev,fsync=0"/' \
+    sed -i -e '/mountopt =/s/".*"/"nodev"/' \
     /etc/containers/storage.conf
 else
-    sed -e '/mountopt =/s/".*"/"nodev,fsync=0"/' \
+    sed -e '/mountopt =/s/".*"/"nodev"/' \
     /usr/share/containers/storage.conf > /etc/containers/storage.conf
 fi
 
