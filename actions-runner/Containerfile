@@ -5,6 +5,7 @@ set -e -o nounset -o pipefail
 set -x
 
 dnf --assumeyes --setopt=install_weak_deps=False install \
+    git-core \
     nodejs24 \
 
 
