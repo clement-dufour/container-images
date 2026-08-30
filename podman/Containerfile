@@ -1,0 +1,64 @@
+FROM registry.fedoraproject.org/fedora:44@sha256:629e314a46769025e2e0252a0f212b8efe4cc8adb6691cd5604cd6a3934bd18f
+
+RUN --mount=type=tmpfs,target=/var << 'EOR'
+set -e -o nounset -o pipefail
+set -x
+
+sed -i "/enabled=/s/1/0/" \
+    /etc/yum.repos.d/fedora-cisco-openh264.repo \
+
+rpm --setcaps shadow-utils
+
+dnf --assumeyes --setopt=install_weak_deps=False install \
+    --exclude container-selinux \
+    podman \
+
+
+dnf clean all
+
+useradd --uid 1000 podman
+printf 'root:1:65535\npodman:1:999\npodman:1001:64535\n' > /etc/subuid
+printf 'root:1:65535\npodman:1:999\npodman:1001:64535\n' > /etc/subgid
+
+cat << 'EOF' > /etc/containers/containers.conf
+[containers]
+netns="host"
+userns="host"
+ipcns="host"
+utsns="host"
+cgroupns="host"
+cgroups="disabled"
+log_driver = "k8s-file"
+[engine]
+cgroup_manager = "cgroupfs"
+events_logger="file"
+runtime="crun"
+EOF
+
+if [ -f /etc/containers/storage.conf ]; then
+    sed -i -e '/mountopt =/s/".*"/"nodev,fsync=0"/' \
+    /etc/containers/storage.conf
+else
+    sed -e '/mountopt =/s/".*"/"nodev,fsync=0"/' \
+    /usr/share/containers/storage.conf > /etc/containers/storage.conf
+fi
+
+
+mkdir -p /home/podman/.config/containers/
+cat << 'EOF' > /home/podman/.config/containers/containers.conf
+[containers]
+volumes = [
+    "/proc:/proc",
+]
+default_sysctls = []
+EOF
+
+mkdir -p /home/podman/.local/share/containers
+chown podman:podman -R /home/podman
+
+EOR
+
+VOLUME /var/lib/containers
+VOLUME /home/podman/.local/share/containers
+
+ENV BUILDAH_ISOLATION=chroot

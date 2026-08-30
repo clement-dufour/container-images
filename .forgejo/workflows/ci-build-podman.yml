@@ -1,0 +1,33 @@
+name: build podman
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'podman/**'
+      - '.forgejo/workflows/ci-build-podman.yml'
+
+concurrency:
+  group: ${{ forgejo.workflow }}-${{ forgejo.ref || forgejo.run_id }}
+  cancel-in-progress: ${{ forgejo.event_name == 'pull_request' }}
+
+jobs:
+  build:
+    name: build
+    runs-on: podman-builder
+    uses: clmnt/container-images/.forgejo/workflows/reusable-build.yml@93c4fb5f6c9b7861448146a0833217ce41de9375 # v1.1
+    strategy:
+      fail-fast: false
+      matrix:
+        image:
+          - podman
+
+    with:
+      image-names: |
+        forgejo.clmnt.xyz/${{ forgejo.repository_owner }}/${{ matrix.image }}:${{ forgejo.sha }}
+        forgejo.clmnt.xyz/${{ forgejo.repository_owner }}/${{ matrix.image }}:latest
+      containerfiles: ${{ matrix.image }}/Containerfile
+      context: ${{ matrix.image }}
+    secrets:
+      registry-user: ${{ forgejo.actor }}
+      registry-password: ${{ secrets.TOKEN_PACKAGES_RW }}
+      sigstore-private-key: ${{ secrets.COSIGN_PRIVATE_KEY }}

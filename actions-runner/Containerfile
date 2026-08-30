@@ -1,12 +1,8 @@
-FROM quay.io/podman/stable:v5.8.2@sha256:663e0dbf407987b7db3f20d3588c283a8228db17b282d2029a482d4d47e36964
+FROM forgejo.clmnt.xyz/clmnt/podman:latest
 
 RUN --mount=type=tmpfs,target=/var << 'EOF'
 set -e -o nounset -o pipefail
 set -x
-
-sed -i "/enabled=/s/1/0/" \
-    /etc/yum.repos.d/fedora-cisco-openh264.repo \
-
 
 dnf --assumeyes --setopt=install_weak_deps=False install \
     nodejs24 \
