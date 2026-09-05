@@ -24,6 +24,7 @@ dnf --assumeyes install \
     cmake \
     go \
     gopls \
+    hadolint \
     hunspell \
     hunspell-en-US \
     hunspell-fr \
