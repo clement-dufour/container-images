@@ -6,7 +6,8 @@
   "packageRules": [
     {
       "matchPackageNames": [
-        "registry.fedoraproject.org/fedora-toolbox"
+        "registry.fedoraproject.org/fedora-toolbox",
+        "registry.fedoraproject.org/fedora"
       ],
       "matchUpdateTypes": [
         "major"
