@@ -15,7 +15,7 @@ on:
         type: string
         required: false
       source:
-        default: ${{ forgejo.event.repository.html_url }}
+        default: ${{ forgejo.server_url }}/${{ forgejo.repository }}
         type: string
         required: false
       push:
