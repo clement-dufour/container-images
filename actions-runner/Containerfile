@@ -1,4 +1,4 @@
-FROM forgejo.clmnt.xyz/clmnt/podman:latest@sha256:7f226be6a1e840b990eda79168b2faa31d0a44b44a9392e0a44d260ceaeaa511
+FROM forgejo.clmnt.xyz/clmnt/podman:latest@sha256:a7296f4eb82a8be367c955d507816d35e741a50f2e42e26f0bb048d55e482802
 
 RUN --mount=type=tmpfs,target=/var << 'EOF'
 set -e -o nounset -o pipefail
